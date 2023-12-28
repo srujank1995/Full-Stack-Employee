@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   TextField,
   Select,
@@ -11,21 +11,22 @@ import {
   FormLabel,
   Alert,
   AlertTitle,
+  InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { countries } from "./Data.js/Countries";
 
 function AddDetails() {
-  const [name, setname] = useState();
-  const [email, setemail] = useState();
-  const [country, setCountry] = useState([]);
-  const [project, setproject] = useState();
-  const [skill, setskill] = useState();
-  const [status, setstatus] = useState();
-  const [phone, setphone] = useState();
-  const [selectOption, setSelectedOption] = useState('')
+  const [name, setname] = useState("");
+  const [email, setemail] = useState("");
+  const [project, setproject] = useState("");
+  const [skill, setskill] = useState("");
+  const [status, setstatus] = useState("");
+  const [phone, setphone] = useState("");
+  const [selectOption, setSelectedOption] = useState("");
 
   const navigate = useNavigate();
-/**************************************SUBMIT FORM FUNCTION************************************************/
+  /**************************************SUBMIT FORM FUNCTION************************************************/
   const handleSubmit = async (e) => {
     e.preventDefault();
     let employee = { name, email, selectOption, project, skill, status, phone };
@@ -40,6 +41,7 @@ function AddDetails() {
         }
       );
       await response.json();
+      console.log(response);
     } catch (error) {
       return (
         <Alert severity="error">
@@ -50,44 +52,11 @@ function AddDetails() {
     }
     console.log(JSON.stringify(employee));
   };
-/**************************************REDIRECT TO DASHBOARD************************************************/
+  /**************************************REDIRECT TO DASHBOARD************************************************/
   const cancelForm = () => {
     navigate("/");
   };
-/**************************************GET API FETCH Function************************************************/
-  useEffect(()=>{
-    const getApiRequest = async () => {
-      var myHeaders = new Headers();
-      myHeaders.append("Accept", "Application/json");
-      myHeaders.append("api-token","ChXjuzdz28aMTR4-6QzmBWngyN_6fvaAtKpvuzjRVwuTq1iuKfEd7CehKbUKKGw5fD4");
-      myHeaders.append("user-email", "pubgraman53@gmail.com");
-  
-      var getRequestOptions = {
-        method: "GET",
-        headers: myHeaders,
-      };
-  
-      const getRes = await fetch("https://www.universal-tutorial.com/api/getaccesstoken",getRequestOptions);
-      const res = await getRes.json();
-      const AuthToken = res.auth_token;
-  
-      var countryMyHeaders = new Headers();
-      countryMyHeaders.append("accept", "application/json");
-      countryMyHeaders.append("Authorization", "Bearer "+AuthToken);
-      
-      var countryRequestOptions = {
-        method: "GET",
-        mode:"cors",
-        headers: countryMyHeaders,
-      };
-  
-      const response = await fetch("https://www.universal-tutorial.com/api/countries",countryRequestOptions);
-      const countryRes = await response.json()
-        setCountry(countryRes);
-    };
-    getApiRequest();
-  },)
-
+  /**************************************GET API FETCH Function************************************************/
   return (
     <Container
       component="main"
@@ -131,7 +100,10 @@ function AddDetails() {
             </Grid>
             <Grid item xs={6}>
               <FormLabel variant="standard">
-               <FormLabel style={{ fontWeight: 600 }} > EMPLOYEE COUNTRY</FormLabel>
+                <InputLabel style={{ fontWeight: 600 }}>
+                  {" "}
+                  EMPLOYEE COUNTRY
+                </InputLabel>
               </FormLabel>
               <Select
                 labelId="demo-simple-select-standard-label"
@@ -139,16 +111,18 @@ function AddDetails() {
                 name="country"
                 required
                 value={selectOption}
-                onChange={(e) => setSelectedOption(e.target.value)}
-              > 
-              <MenuItem disabled value="">Select Country </MenuItem>
-                {
-                  country.map((items) => (
-                  <MenuItem key={items.country_short_name} value={items.country_short_name}>
-                    {items.country_name}
+                onChange={(e) => {
+                  setSelectedOption(e.target.value);
+                }}
+              >
+                <MenuItem disabled value="">
+                  Select Country{" "}
+                </MenuItem>
+                {countries.map((items) => (
+                  <MenuItem style={{minWidth:300}} key={items.code} value={items.name}>
+                    {items.name}
                   </MenuItem>
                 ))}
-
               </Select>
             </Grid>
             <Grid item xs={6}>
